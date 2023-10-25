@@ -37,13 +37,18 @@ jobs:
           yarn install --immutable --network-timeout 120000
       - name: Build
         run: yarn build:tauri
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
       # Possibly set up some basic unit testing just to make sure parts render and none of the libraries are straight up breaking
       - uses: actions/upload-artifact@v2
         with:
           name: built-app-${{ matrix.name }}
+# For now just upload the whole bundle, but we can be more specific later
           path: |
-            app/tauri/target/release/bundle/deb/*.deb
-            app/tauri/target/release/bundle/appimage/*.AppImage
-            app/tauri/target/release/bundle/msi/*.msi
-            app/tauri/target/release/bundle/dmg/*.dmg
-            app/tauri/target/release/bundle/macos/*.app
+            app/tauri/target/release/bundle/**
+#            app/tauri/target/release/bundle/deb/*.deb
+#            app/tauri/target/release/bundle/appimage/*.AppImage
+#            app/tauri/target/release/bundle/msi/*.msi
+#            app/tauri/target/release/bundle/dmg/*.dmg
+#            app/tauri/target/release/bundle/macos/*.app
