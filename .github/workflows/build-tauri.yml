@@ -1,4 +1,4 @@
-name: Test Build Tauri
+name: Build Tauri
 
 on:
   push:
@@ -13,10 +13,16 @@ jobs:
         include:
           - os: ubuntu-22.04
             name: linux
+            targets: "aarch64-apple-darwin,x86_64-apple-darwin"
+            tauri_target: "universal-apple-darwin"
           - os: macos-latest
             name: mac
+            targets: "aarch64-apple-darwin,x86_64-apple-darwin"
+            tauri_target: "universal-apple-darwin"
           - os: windows-latest
             name: win
+            targets: "aarch64-apple-darwin,x86_64-apple-darwin"
+            tauri_target: "universal-apple-darwin"
 
     steps:
       - uses: actions/checkout@v2
@@ -27,6 +33,10 @@ jobs:
           cache: "yarn"
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './app/tauri -> target'
       - name: install dependencies (ubuntu only)
         if: matrix.os == 'ubuntu-22.04'
         run: |
@@ -36,7 +46,7 @@ jobs:
         run: |
           yarn install --immutable --network-timeout 120000
       - name: Build
-        run: yarn build:tauri
+        run: yarn build:tauri --verbose
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
